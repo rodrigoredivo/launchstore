@@ -1,21 +1,44 @@
 const User = require('../model/User')
+const {compare} = require('bcryptjs')
 
-async function post(req, res, next) {
-  //CHECK IF HAS ALL FIELDS
-  const keys = Object.keys(req.body)
-      
+function checkAllFields(body) {
+  const keys = Object.keys(body)
+
   for(key of keys) {
-    if (req.body[key] == "") {
+    if (body[key] == "") {
       return res.render('user/register', {
-        user: req.body,
+        user: body,
         error: 'Por favor, preencha todos os campos.'
       })
     }
   }
+}
+
+async function show(req, res, next) {
+  const {  userId: id } = req.session
+
+  const user = await User.findOne({ where: {id} })
+
+  if(!user) return res.render('user/register', {
+    error: 'Usuário não encontrado!'
+  })
+
+  next()
+}
+
+async function post(req, res, next) {
+  //CHECK IF HAS ALL FIELDS
+  const fillAllFields = checkAllFields(req.body)
+  if(fillAllFields) {
+    return res.render('user/register', fillAllFields)
+  }
+
   //CHECK IF USER EXISTS [EMAIL, CPF_CNPJ]
   let { email, cpf_cnpj, password, passwordRepeat } = req.body
+  console.log(req.body)
   cpf_cnpj = cpf_cnpj.replace(/\D/g, "")
-  const user = await user.findOne({
+  
+  const user = await User.findOne({
     where: {email},
     or: {cpf_cnpj}
   })
@@ -34,6 +57,36 @@ async function post(req, res, next) {
   next()
 }
 
+async function update(req, res, next) {
+  //CHECK IF HAS ALL FIELDS
+  const fillAllFields = checkAllFields(req.body)
+  if(fillAllFields) {
+    return res.render('user/index', fillAllFields)
+  }
+
+  const { id, password } = req.body
+
+  if(!password) return res.render('user/index', {
+    user: req.body,
+    error: "Coloque sua senha para atualizar seu cadastro."
+  })
+
+  const user = await User.findOne({ where: {id} })
+
+  const passed = await compare(password, user.password)
+
+  if(!passed) return res.render("user/index", {
+    user: req.body,
+    error: "Senha incorreta"
+  })
+
+  req.user = user
+
+  next()
+}
+
 module.exports = {
-  post
+  post,
+  show,
+  update
 }
