@@ -6,10 +6,10 @@ function checkAllFields(body) {
 
   for(key of keys) {
     if (body[key] == "") {
-      return res.render('user/register', {
+      return {
         user: body,
         error: 'Por favor, preencha todos os campos.'
-      })
+      }
     }
   }
 }
@@ -23,6 +23,8 @@ async function show(req, res, next) {
     error: 'Usuário não encontrado!'
   })
 
+  req.user = user
+
   next()
 }
 
@@ -35,7 +37,6 @@ async function post(req, res, next) {
 
   //CHECK IF USER EXISTS [EMAIL, CPF_CNPJ]
   let { email, cpf_cnpj, password, passwordRepeat } = req.body
-  console.log(req.body)
   cpf_cnpj = cpf_cnpj.replace(/\D/g, "")
   
   const user = await User.findOne({
