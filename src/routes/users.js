@@ -3,11 +3,12 @@ const routes = express.Router()
 const SessionController = require("../app/controller/SessionController")
 const UserController = require("../app/controller/UserController")
 
-const Validator = require("../app/validators/user")
+const UserValidator = require("../app/validators/user")
+const SessionValidator = require("../app/validators/session")
 
 // LOGIN/LOGOUT
 routes.get('/login', SessionController.loginForm)
-//routes.post('/login', SessionController.login)
+routes.post('/login',SessionValidator.login , SessionController.login)
 routes.post('/logout', SessionController.logout)
 
 // RESET PASSWORD / FORGOT
@@ -18,10 +19,10 @@ routes.post('/logout', SessionController.logout)
 
 // USER REGISTER UserController
 routes.get('/register', UserController.registerForm)
-routes.post('/register', Validator.post, UserController.post)
+routes.post('/register', UserValidator.post, UserController.post)
 
-routes.get('/', Validator.show, UserController.show)
-routes.put('/',Validator.update, UserController.update)
+routes.get('/', UserValidator.show, UserController.show)
+routes.put('/',UserValidator.update, UserController.update)
 //routes.delete('/', UserController.delete)
 
 module.exports = routes
