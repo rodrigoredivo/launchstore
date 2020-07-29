@@ -6,13 +6,13 @@ async function login(req, res, next) {
 
   const user = await User.findOne({ where: {email} })
 
-  if(!user) return res.render('user/register', {
+  if(!user) return res.render('session/login', {
     user: req.body,
     error: 'Usuário não cadastrado!'
   })
 
   const passed = await compare(password, user.password)
-  if(!passed) return res.render("user/index", {
+  if(!passed) return res.render("session/login", {
     user: req.body,
     error: "Senha incorreta"
   })
