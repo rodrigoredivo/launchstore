@@ -66,7 +66,7 @@ module.exports = {
     return res.render("session/password-reset", { token: req.query.token })
   },
   reset(req, res) {
-    const { email, password, passwordRepeat, token } =  req.body 
+    const { email, password, passwordRepeat, token } = req.body 
     
     try {
       
@@ -78,9 +78,9 @@ module.exports = {
       
       
     } catch (err) {
-      console.log(err)
+      console.error(err)
       return res.render("session/password-reset", {
-        error: "Erro inesperado, tente novament!"
+        error: "Erro inesperado, tente novamente!"
       })
     }
   }
